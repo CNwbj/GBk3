@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: GBk3
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: Wbj
+Implementation-Vendor-Id: cn.sz.zl
+Build-Jdk: 1.8.0_171
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/GBk3
+Created-By: Maven Integration for Eclipse
+

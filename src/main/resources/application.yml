@@ -1,0 +1,21 @@
+#配置数据源
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:orcl
+    username: wbj
+    password: 123
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+#配置视图解析器
+  mvc:
+   view:
+    prefix: /
+    suffix: .jsp
+  redis:
+    host: 10.1.16.44
+    port: 6379   
+server: 
+     port: 8080
+
+#Mybatis映射文件
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
