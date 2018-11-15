@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IDeptDao">
+	
+	<select id="queryAllDept" resultType="cn.sz.zl.pojo.Dept">
+		select deptno,dname from dept
+	</select>
+	
+	<select id="queryDeptByDeptno" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Dept">
+		select deptno,dname from dept where deptno = #{deptno}
+	</select>
+	
+	<select id="checkDeptre" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(deptno) from dept where dname = #{dname}
+	</select>
+	
+	<insert id="addDept" parameterType="cn.sz.zl.pojo.Dept">
+		insert into dept values(deptseq.nextval,#{dname})
+	</insert>
+	
+	<select id="queryAllDeptandUserCount" resultType="cn.sz.zl.pojo.Dept">
+		select d.deptno,d.dname,t.usercount from
+			(select deptno, count(deptno) usercount from sysuser  group by deptno) t,dept d where t.deptno=d.deptno
+	</select>
+	
+	
+</mapper>
+

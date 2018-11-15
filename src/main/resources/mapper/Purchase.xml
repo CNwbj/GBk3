@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IPurchaseDAO">
+<select id="findAll" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Purchase">
+		select * from purchase where purchase_id =#{purchase_id}
+	</select>
+	<select id="findPurchaseById" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Purchase">
+		select * from purchase where sale_id =#{saleId}
+	</select>
+	<select id="findAllPurchase" parameterType="cn.sz.zl.util.Excellent" resultMap="showinfoPurchase">
+		<!-- select * from (select rownum ro, m.material_name,m.material_price,m.material_details,m.material_url,p.purchase_nul,p.orders_sum,d.depot_sum, s.first_date,s.submit_date,p.sum_oos,sy.loginname,p.purchase_id,p.cost_price 
+			from material m ,sale s, purchase p, depot d,sysuser sy where p.material_id=m.material_id and p.userid=sy.userid and p.sale_id=s.saleid and m.depot_id=d.depot_id and rownum&lt;=#{end})s  -->
+			 
+		 select * from (select rownum ro,m.material_name,s.submit_date, m.material_id, p.purchase_id,d.depot_id,s.saleid,sy.userid 
+			from material m ,sale s, purchase p, depot d,sysuser sy where p.material_id=m.material_id and p.userid=sy.userid and p.sale_id=s.saleid and m.depot_id=d.depot_id and rownum&lt;=#{end})l
+		 <where> 
+		  l.ro&gt;#{start}
+				<if test="linchpin!=null and linchpin!=''">and material_name like '%${linchpin}%'</if>
+				<if test="startTime!=null ">and submit_date >=#{startTime}</if> 
+				<if test="stopTime!=null">and submit_date &gt;=#{stopTime}</if> 
+			
+		</where> 
+	</select>
+	<resultMap type="cn.sz.zl.pojo.Purchase" id="showinfoPurchase">
+		<association property="sale" column="saleid" select="cn.sz.zl.dao.ISaleDao.querySale"></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+		<association property="depot" column="depot_id" select="cn.sz.zl.dao.IDepotDAO.findById"></association>
+		<association property="sysuser" column="userid" select="cn.sz.zl.dao.IShipmentDAO.queryRoleID"></association>
+		<association property="purchase" column="purchase_id" select="cn.sz.zl.dao.IPurchaseDAO.findAll"></association>
+		
+	</resultMap>
+	<select id="getCcount" parameterType="cn.sz.zl.util.Excellent" resultType="int">
+		select count(purchase_id) from (select m.material_name,m.material_price,m.material_details,m.material_url,p.purchase_nul,p.orders_sum,d.depot_sum, s.first_date,s.submit_date,p.sum_oos,sy.loginname,p.purchase_id,p.cost_price 
+			from material m ,sale s, purchase p, depot d,sysuser sy where p.material_id=m.material_id and p.userid=sy.userid and p.sale_id=s.saleid and m.depot_id=d.depot_id)s
+			<where>
+				<if test="linchpin!=null and linchpin!=''">and material_name like '%${linchpin}%'</if>
+				<if test="startTime!=null and stopTime!=null">and submit_date between #{startTime} and #{stopTime}</if> 
+			</where>
+	</select>
+	<!-- 采购修改 -->
+	<update id="UpdatePurchaseById" parameterType="cn.sz.zl.pojo.Purchase">
+		update Purchase set cost_price=#{cost_price},orders_sum#={orders_sum} where purchase_id=#{purchase_id}
+	</update>
+	<!--  采购删除 -->
+	<delete id="DeletePurchaseByid" parameterType="java.lang.Integer">
+		  delete from purchase where purchase_id=#{purchase_id}
+	</delete>
+	<select id="lookshowExcellent" parameterType="java.lang.Integer" resultMap="showinfoPurchase">
+		  select * from (select m.material_name,s.submit_date, m.material_id, p.purchase_id,d.depot_id,s.saleid,sy.userid 
+			from material m ,sale s, purchase p, depot d,sysuser sy where p.material_id=m.material_id and p.userid=sy.userid 
+      		and p.sale_id=s.saleid and m.depot_id=d.depot_id and purchase_id=1)
+	</select>
+</mapper>

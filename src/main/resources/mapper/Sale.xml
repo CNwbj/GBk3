@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.ISaleDao" >
+	<resultMap type="cn.sz.zl.util.FHUtil" id="findall">
+		<association property="sale" column="saleid" select="cn.sz.zl.dao.ISaleDao.querySale" ></association>
+		<association property="customer" column="c_id" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById" ></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById" ></association>
+		<association property="payment" column="c_paymentid" select="cn.sz.zl.dao.IPaymentDAO.findPaymentById" ></association>
+		<association property="state" column="stateid" select="cn.sz.zl.dao.IStateDAO.findStateById" ></association>
+		<association property="state2" column="column2" select="cn.sz.zl.dao.IStateDAO.findStateById" ></association>
+	</resultMap> 
+	
+	<select id="findAllInfo" parameterType="cn.sz.zl.query.FHQuery" resultMap="findall" >
+		select s.*,c.*,m.*,cp.payment,st.statename,st2.statename
+		from sale s,customer c,material m,c_payment cp,state st,state st2
+		where s.c_id = c.c_id and s.material_id = m.material_id and s.c_paymentid = cp.c_paymentid and s.stateid = st.stateid and s.column2 = st2.stateid
+			<if test='saleid!=null and saleid!="" '>
+				and saleid = #{saleid}
+			</if>
+			<if test='c_id!=null and c_id!="" '>
+				and s.c_id = #{c_id}
+			</if>
+			<if test='material_id!=null and material_id!="" '>
+				and s.material_id = #{material_id}
+			</if>
+			<if test='sendaddr!=null and sendaddr!="" '>
+				and c.c_address like '%${sendaddr}%'
+			</if>
+			<if test='c_name!=null and c_name!="" '>
+				and c.c_name like '%${c_name}%'
+			</if>
+			<if test="qStartAddDate!=null">
+				and create_date>=#{qStartAddDate}
+			</if>
+			<if test="qEndAddDate!=null">
+				and create_date<![CDATA[<=]]>#{qEndAddDate}
+			</if>
+			
+	</select>
+	<!-- 根据ID查询 -->
+	<select id="querySale" parameterType="int" resultType="cn.sz.zl.pojo.Sale" >
+		select * from sale where saleid=#{saleid}
+	</select>
+	<!-- 7=已经审批 -->
+	<update id="updateStateid" parameterType="int">
+		update sale set stateid = 7 where saleid = #{saleid}
+	</update>
+	<!-- 符合条件的总数 -->
+	 <select id="querySaleRows" parameterType="cn.sz.zl.query.FHQuery" resultType="int">
+		select count(saleid) from(
+		select s.saleid,c.c_id,c.c_address,c.c_name,m.material_id,cp.payment,st.statename
+		from sale s,customer c,material m,c_payment cp,state st
+		where s.c_id = c.c_id and s.material_id = m.material_id and s.c_paymentid = cp.c_paymentid and s.stateid = st.stateid)
+		<where>
+			<if test='saleid!=null and saleid!="" '>
+				and saleid = #{saleid}
+			</if>
+			<if test='c_id!=null and c_id!="" '>
+				and c_id = #{c_id}
+			</if>
+			<if test='material_id!=null and material_id!="" '>
+				and material_id = #{material_id}
+			</if>
+			<if test='sendaddr!=null and sendaddr!="" '>
+				and c_address like '%${sendaddr}%'
+			</if>
+			<if test='c_name!=null and c_name!="" '>
+				and c_name like '%${c_name}%'
+			</if>
+			<if test="qStartAddDate!=null">
+				and create_date>=#{qStartAddDate}
+			</if>
+			<if test="qEndAddDate!=null">
+				and create_date<![CDATA[<=]]>#{qEndAddDate}
+			</if>
+		</where>
+	</select>
+	<!-- submit -->
+	<select id="submit" parameterType="java.util.Map" resultType="int" >
+		select q_price from quotation where c_id=#{c_id} and m_id=#{m_id} and stateid = 14
+	</select> 
+	<!-- 生成sale订单 -->
+	<insert id="saleorder" parameterType="java.util.Map">
+		insert into sale values (saleid_seq.nextval,#{c_paymentid},#{c_id},
+		#{m_id},#{realprice},null,#{goodscount},to_date(sysdate+3),null,null,sysdate,6,6,null,#{sendaddr},6,6,6,9,24)
+	</insert>
+	<!-- 是否议价通过 -->
+	<select id="bargaining" parameterType="java.util.Map" resultType="int">
+		select q_price from talkprice where c_id=#{c_id} and material_id=#{m_id} and stateid = 14
+	</select>
+	<!-- 修改收货状态 25=确认收货 -->
+	<update id="updateColumn6" parameterType="int">
+		update sale set column6 = 25 where saleid=#{saleid}
+	</update>
+	<!-- 批量修改 -->
+	<update id="updateAll" parameterType="java.util.List">
+		update sale set stateid = 7 where stateid in
+		 <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+            #{item}   
+         </foreach>
+	</update>
+</mapper>

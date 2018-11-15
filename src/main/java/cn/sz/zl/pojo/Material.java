@@ -8,6 +8,13 @@ public class Material implements Serializable {
 	private String material_name;
 	private Double material_price;
 	private String material_details;
+	private String material_url;
+	private String material_nul;
+	private String material_null;
+	private Integer material_sum;
+	private State state;
+	private Depot depot;
+	private Integer depot_id;
 	public Integer getMaterial_id() {
 		return material_id;
 	}
@@ -31,6 +38,48 @@ public class Material implements Serializable {
 	}
 	public void setMaterial_details(String material_details) {
 		this.material_details = material_details;
+	}
+	public String getMaterial_url() {
+		return material_url;
+	}
+	public void setMaterial_url(String material_url) {
+		this.material_url = material_url;
+	}
+	public String getMaterial_nul() {
+		return material_nul;
+	}
+	public void setMaterial_nul(String material_nul) {
+		this.material_nul = material_nul;
+	}
+	public String getMaterial_null() {
+		return material_null;
+	}
+	public void setMaterial_null(String material_null) {
+		this.material_null = material_null;
+	}
+	public Integer getMaterial_sum() {
+		return material_sum;
+	}
+	public void setMaterial_sum(Integer material_sum) {
+		this.material_sum = material_sum;
+	}
+	public Integer getDepot_id() {
+		return depot_id;
+	}
+	public void setDepot_id(Integer depot_id) {
+		this.depot_id = depot_id;
+	}
+	public State getState() {
+		return state;
+	}
+	public void setState(State state) {
+		this.state = state;
+	}
+	public Depot getDepot() {
+		return depot;
+	}
+	public void setDepot(Depot depot) {
+		this.depot = depot;
 	}
 	
 }

@@ -1,0 +1,241 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+	<base href="<%=basePath%>" />
+		<meta charset="utf-8" />
+		<title>华夏文具</title>
+		<link rel="stylesheet" href="css/bootstrap.css" />
+		<link rel="stylesheet" href="css/bootstrap-theme.css" />
+		<script src="js/jquery.js"></script>
+		<script src="js/bootstrap.js"></script>
+		<script>
+			$(function () {
+				$('#myTab li:eq(0) a').tab('show');
+				
+				//到时候使用隐藏input镶嵌session里面存储的用户名,如果有值那么就可以 执行函数!
+				$("#login-in-after").click(function(){
+					$("#register-before").hide();
+					$(this).hide();
+					$("#log-out-before").removeClass("hide");
+					$("#account").removeClass("hide");
+					$("#registerFrame").attr("src","login_in.jsp");
+				});
+				
+				$("#log-out-before").click(function(){
+					$("#register-before").show();
+					$(this).addClass("hide");
+					$("#login-in-after").show();
+					$("#account").addClass("hide");
+				});
+				
+				$("#realRegister").click(function(){
+					$("#registerFrame").attr("src","register.jsp");
+				});
+				
+				$("#customerdetail").click(function(){
+					$("#registerFrame").attr("src","customerDetails.jsp");
+				});
+				
+				$("#customeroreders").click(function(){
+					$("#registerFrame").attr("src","ordersMsg.jsp");
+				});
+				
+			});
+		</script>
+	</head>
+	<body>
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href=""><b>华夏文具</b></a>
+				</div>
+				<div>
+					<ul id="myTab" class="nav navbar-nav navbar-tabs">
+						<li><a href="#home"  data-toggle="tab"><span class="glyphicon glyphicon-home">首页</span></a></li>
+						<li class="dropdown">
+							<a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">
+								<span class="glyphicon glyphicon-list">商品分类</span>
+								<b class="caret"></b>
+							</a>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+								<li><a href="#pencil" tabindex="-1" data-toggle="tab">笔</a></li>
+								<li><a href="#ink" tabindex="-1" data-toggle="tab">墨</a></li>
+								<li><a href="#paper" tabindex="-1" data-toggle="tab">纸</a></li>
+								<li><a href="#inkpool" tabindex="-1" data-toggle="tab">砚</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#vendorList" class="dropdown-toggle" data-toggle="dropdown">
+								<span class="glyphicon glyphicon-globe">供应商简介</span>
+								<b class="caret"></b>
+							</a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#" tabindex="-1" data-toggle="tab">京东</a></li>
+								<li><a href="#" tabindex="-1" data-toggle="tab">天猫</a></li>
+								<li><a href="#" tabindex="-1" data-toggle="tab">网易</a></li>
+								<li><a href="#" tabindex="-1" data-toggle="tab">亚马逊</a></li>
+							</ul>
+						</li>
+						<li><a href="#orderGuide" data-toggle="tab"><span class="glyphicon glyphicon-hand-right">下单指南</span></a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<span class="glyphicon glyphicon-user">我的账户</span>
+								<b class="caret"></b>
+							</a>
+							<ul id="account" class="dropdown-menu hide" role="menu">
+								<li><a id="customerdetail" href="#register" tabindex="-1" data-toggle="tab">账户详情</a></li>
+								<li><a id="customeroreders" href="#register" tabindex="-1" data-toggle="tab">订单中心</a></li>
+								
+							</ul>
+						</li>
+						<li id="register-before"><a id="realRegister" href="#register" data-toggle="tab"><span class="glyphicon glyphicon-registration-mark">注册</span></a></li>
+						<li id="login-in-after"><a href="#register" value="login" data-toggle="tab"><span class="glyphicon glyphicon-log-in">登录</span></a></li>
+						<li id="log-out-before" class="hide" data-toggle="tab"><a href="#"><span class="glyphicon glyphicon-log-out">注销</span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div style="width:100%;height:40px;"></div>	
+			
+		<div class="container">
+			<div id="myTabContent" class="tab-content">
+				<!-- index -->
+				
+				<div class="tab-pane fade" id="home">
+					
+					<div id="myCarousel" class="carousel slide">
+						<!-- 轮播（Carousel）指标 -->
+						<ol class="carousel-indicators">
+							<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+							<li data-target="#myCarousel" data-slide-to="1"></li>
+							<li data-target="#myCarousel" data-slide-to="2"></li>
+							<li data-target="#myCarousel" data-slide-to="3"></li>
+						</ol>   
+						<!-- 轮播（Carousel）项目 -->
+						<div class="carousel-inner">
+							<div class="item active">
+								<img src="img/01.jpg" width="800" style="margin:0 auto;" alt="First slide">
+							</div>
+							<div class="item">
+								<img src="img/02.jpg" width="800" style="margin:0 auto;" alt="Second slide">
+							</div>
+							<div class="item">
+								<img src="img/03.jpg" width="800" style="margin:0 auto;" alt="Third slide">
+							</div>
+							<div class="item">
+								<img src="img/04.jpg" width="800" style="margin:0 auto;" alt="forth slide">
+							</div>
+						</div>
+						<!-- 轮播（Carousel）导航 -->
+						<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+							<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+							<span class="sr-only">Previous</span>
+						</a>
+						<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+							<span class="sr-only">Next</span>
+						</a>
+					</div>
+					<ul class="breadcrumb">
+						<li>
+							<a href="#">华夏文具</a>
+						</li>
+						<li>
+							<a href="#home">首页</a>
+						</li>
+					</ul>
+					<!--introduce main product -->
+					<div>
+						<div class="col-lg-6">
+							
+							<dl>
+								<dt><img width="200" src="img/log.png"/><span><font size="6">商品名称:毛笔</font></span></dt>
+								<dd><p class="text-info"><font size="4">毛笔</font>（Chinese brush，writing brush），是一种源于中国的传统书写工具，也逐渐成为传统绘画工具。毛笔是古代中国人民在生产实践中发明的。
+随着人类社会的不断发展，勤劳智慧的中华民族又不断地总结经验，存其精华，弃其糟粕，勇于探索，敢于创新。几千年以来，它为创造中华民族光辉灿烂的文化，为促进中华民族与世界各族的文化交流，做出了卓越的贡献。毛笔是中华民族对世界艺术宝库提供的一件珍宝。
+毛笔是用兽毛扎成笔头，再粘结在管状的笔杆上制成的。一支好的毛笔应具有“尖、齐、圆、健”的特点。“尖”就是笔锋尖锐；“齐”就是修削整齐；“圆”就是笔头圆润；“健”就是毛笔弹性强，写出的字锐利矫健。
+									</p>
+								</dd>
+							</dl>
+					
+						</div>
+						<div class="col-lg-6">
+							<img class="img-circle img-responsive" width="600" src="img/05.jpg" />
+						</div>
+					</div>
+					<div>
+						<div class="col-lg-6">
+							<img class="img-rounded img-responsive" src="img/06.jpg" width="600"/>
+						</div>
+						<div class="col-lg-6">
+							<dl>
+								<dt><img width="200"  src="img/logg.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><font size="6">商品名称:墨</font></span></dt>
+								<dd><p class="text-success"><font size="4">墨</font>，是形声字，从土黑声，本义为书写用的黑色颜料，《说文》，“墨，书墨也”。墨也是黑色的别称，《广雅》，“墨，黑也”。引申为文墨、贪墨、绳墨等。墨刑为古代五刑之一，即脸上刺字并涂以黑色颜料。另有墨家学派，为诸子百家之一。又有墨姓。 [1] 
+墨是中国古代书写和绘画用到的墨锭。墨的主要原料是炭黑、松烟、胶等，是碳元素以非晶质型态的存在。通过砚用水研磨可以产生用于毛笔书写的墨汁，在水中以胶体的溶液存在。墨给人的印象似稍嫌单一，但却是古代书写中必不可缺的用品。借助于这种独创的材料，中国书画奇幻美妙的艺术意境才能得以实现。墨的世界并不乏味，而是内涵丰富。作为一种消耗品，墨能完好如初地呈现于今者，当十分珍贵。 </p></dd>
+							</dl>
+						</div>
+					</div>
+					<div>
+						<div class="col-lg-7">
+							<dl>
+								<dt><img width="200" src="img/log.png"/><span><font size="6">商品名称:宣纸</font></span></dt>
+								<dd><p class="text-info"><font size="4">宣纸</font>，安徽省宣城市泾县特产，国家地理标志产品。
+宣纸是中国独特的手工艺品，具质地绵韧、光洁如玉、不蛀不腐、墨韵万变之特色，享有“千年寿纸”的美誉，被誉为“国宝”。用宣纸题字作画，墨韵清晰，层次分明，骨气兼蓄，气势溢秀，浓而不浑，淡而不灰，其字其画，跃然纸上，神采飞扬，飞目生辉。
+2002年8月，宣纸成功获批国家地理标志保护产品称号。
+									</p>
+								</dd>
+							</dl>
+						</div>
+						<div class="col-lg-12">
+							<img  class="img-responsive" src="img/07.jpg" />
+						</div>
+					</div>
+					<div>
+						<div class="col-lg-6">
+							<img class="img-rounded img-responsive" src="img/08.jpg" width="600"/>
+						</div>
+						<div class="col-lg-6">
+							<br />
+							<dl>
+								<dt><img width="200"  src="img/log.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><font size="6">商品名称:砚台</font></span></dt>
+									<dd><p class="text-success"><font size="4">砚台</font>，亦称为研，中国传统手工艺品之一，砚与笔、墨、纸合称中国传统的文房四宝，是中国书法的必备用具。砚材的运用也极为广泛，其中以广东肇庆的端砚、安徽歙县的歙砚、甘肃卓尼的洮河砚、山西绛县的澄泥砚最为突出，称“四大名砚”。
+汉代刘熙写的《释名》中解释：“砚者研也，可研墨使和濡也”。它是由原始社会的研磨器演变而来。初期的砚，形态原始，是用一块小研石在一面磨平的石器上压墨丸研磨成墨汁。至汉时，砚上出现了雕刻，有石盖，下带足。魏晋至隋出现了圆形瓷砚，由三足而多足。箕形砚是唐代常见的砚式，形同簸箕，砚底一端落地，一端以足支撑。唐、宋时，砚台的造型更加多样化。
+										</p>
+									</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				
+				<!-- index end-->		
+				<!-- categories-->
+				<div class="tab-pane fade" id="pencil">
+					<div style="width:100%;height:40px;"></div>
+					
+					<iframe id="cate_pencilFrame" width="100%" scrolling="no" frameborder="0" src="cate_pencil.jsp"></iframe>
+				</div>
+				<!-- categories end-->
+				
+				<div class="tab-pane fade" id="register">
+					<div style="width:100%;height:40px;"></div>
+					<iframe id="registerFrame" width="100%" scrolling="no" frameborder="0" src="register.jsp"></iframe>
+				</div>
+				
+			</div>
+			
+			
+			
+			
+		</div>
+		<div id="foot" style="width:100%;height:100px;background-color: #FFFAE8;">
+			<div style="width:8%;height:25px; margin:0 auto;">
+				<br />
+				<p class="text-warning">项目四组,翻版必究</p>
+			</div>
+		</div>
+	</body>
+</html>

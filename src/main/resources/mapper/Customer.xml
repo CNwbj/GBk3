@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="cn.sz.zl.dao.ICustomerDAO" >
+	<!-- 根据Id级联 -->
+	<select id="findCustomerById" resultType="cn.sz.zl.pojo.Customer" parameterType="java.lang.Integer">
+		select * from customer where c_id=#{c_id} 
+	</select>
+	
+	 <!-- 查询所有客户信息-->
+	<!-- <select id="findAllCustomer" parameterType="cn.sz.zl.util.CustomerSearchCondition" resultType="cn.sz.zl.pojo.Customer">
+		select t.rn,c_id,c_idcard_id,c_company,c_name,c_sex,c_pwd,c_phone,c_mail,c_createdate,c_address,c_accountid,stateid,c_work from
+				(select rownum rn,c_id,c_idcard_id,c_company,c_name,c_sex,c_pwd,c_phone,c_mail,c_createdate,c_address,c_accountid,stateid,c_work from customer
+					<where>
+						<if test="c_phone!=null"> and c_phone like '%${c_phone}%' </if>
+						<if test="c_mail!=null"> and c_mail like '%${c_mail}%' </if>
+						<if test="stateid!=null"> and stateid = #{stateid} </if>
+						<if test="c_sex!=null"> and c_sex = #{c_sex} </if>
+					</where>	
+				)t where rn > #{start} and rn <![CDATA[<=]]> #{end}
+	</select>   -->
+	
+	<!-- 查询所有客户信息-->
+	<select id="findAllCustomer" parameterType="cn.sz.zl.util.CustomerSearchCondition" resultType="cn.sz.zl.pojo.Customer">
+		select t.rn,c_id,c_idcard_id,c_company,c_name,c_sex,c_pwd,c_phone,c_mail,c_createdate,c_address,c_accountid,stateid,c_work from
+				(select rownum rn,c_id,c_idcard_id,c_company,c_name,c_sex,c_pwd,c_phone,c_mail,c_createdate,c_address,c_accountid,stateid,c_work from customer
+					<where>
+						<if test="c_phone!=null"> and c_phone like '%${c_phone}%' </if>
+						<if test="c_mail!=null"> and c_mail like '%${c_mail}%' </if>
+						<if test="stateid!=null"> and stateid = #{stateid} </if>
+						<if test="c_sex!=null"> and c_sex = #{c_sex} </if>
+					</where>
+					)t 
+					<where>
+						<if test="start!=null and end!=null"> rn > #{start} and rn <![CDATA[<=]]> #{end}</if>
+					</where>	
+	</select> 
+	
+	
+	
+	
+	
+	
+	<select id="CountAllCus" parameterType="cn.sz.zl.util.CustomerSearchCondition" resultType="java.lang.Integer">
+		select count(c_id) from customer
+		<where>
+			<if test="c_phone!=null"> and c_phone like '%${c_phone}%' </if>
+			<if test="c_mail!=null"> and c_mail like '%${c_mail}%' </if>
+			<if test="stateid!=null"> and stateid = #{stateid} </if>
+			<if test="c_sex!=null"> and c_sex = #{c_sex} </if>
+		</where>	
+	</select>
+	
+	<!--登录使用  -->
+	<select id="findCustomer" parameterType="cn.sz.zl.pojo.Customer" resultType="cn.sz.zl.pojo.Customer">
+		select * from customer 
+		<where>
+			<if test="c_name!=null and c_name!='' ">and c_name=#{c_name} </if>
+			<if test="c_phone!=null and c_phone!='' ">and c_phone=#{c_phone}  </if>
+			<if test="c_pwd!=null and c_pwd!='' ">and c_pwd=#{c_pwd} </if>						
+		</where>		
+	</select>
+	<!-- 密码找回使用 -->
+	<select id="findOneCustomer" parameterType="cn.sz.zl.pojo.Customer" resultType="cn.sz.zl.pojo.Customer">
+		select * from customer where c_phone=#{c_phone}		
+	</select>
+	<!-- 注册客户账号 -->
+	<insert id="customerRegister" parameterType="cn.sz.zl.pojo.Customer" >
+		insert into customer(c_id,c_idcard_id,c_company,c_name,c_sex,c_pwd,c_phone,c_mail,c_createdate,c_address,c_accountid,c_account_num,c_eduid) 
+		values
+		(customers_seq.nextval,#{c_idcard_id},#{c_company},#{c_name},#{c_sex},#{c_pwd},#{c_phone},#{c_mail},sysdate,#{c_address},#{c_accountid},#{c_account_num},#{c_eduid})
+	</insert>
+	<update id="customerUpdate" parameterType="cn.sz.zl.pojo.Customer">
+		update customer 
+		<set>
+			<if test="c_phone!=null and c_phone!='' "> c_phone = #{c_phone},</if>
+			<if test="c_company!=null and c_company!='' "> c_company = #{c_company},</if>
+			<if test="c_mail!=null and c_mail!='' "> c_mail = #{c_mail},</if>
+			<if test="c_address!=null and c_address!='' "> c_address = #{c_address},</if>
+			<if test="c_work!=null and c_work!='' "> c_work = #{c_work},</if>
+			<if test="c_photo!=null and c_photo!='' "> c_photo = #{c_photo},</if>
+			<if test="c_eduid!=null and c_eduid!='' "> c_eduid = #{c_eduid},</if>			
+			<if test="c_pwd!=null and c_pwd!='' "> c_pwd = #{c_pwd},</if>
+		</set>
+		where c_id = #{c_id}
+	</update>
+	
+	<!-- 订单模糊+分页查询-->
+	<select id="findSale" parameterType="cn.sz.zl.util.DWXFenYe" resultMap="info">
+		select * from (select c.*,rownum r from (select * from sale
+			<where>
+				<if test="query!=null">
+				
+					<if test="query.qc_id!=null and query.qc_id!=''">
+						and c_id=#{query.qc_id}
+					</if>
+					
+					<if test="query.qStartAddDate !=null  ">
+					and create_date >=  #{query.qStartAddDate}
+					</if>
+					
+					<if test="query.qEndAddDate !=null">
+					and create_date  <![CDATA[<=]]> #{query.qEndAddDate}
+					</if>
+				</if>
+			</where>
+			order by create_date desc
+		)c)where r>#{rowStart} and r<![CDATA[<=]]>#{rowEnd}
+		
+	</select>
+	<resultMap type="cn.sz.zl.pojo.Sale" id="info">
+		<id column="saleid" property="saleid"/>
+		<association property="customer" column="c_id" javaType="cn.sz.zl.pojo.Customer" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById"></association>
+		<association property="c_payment" column="c_paymentid" select="cn.sz.zl.dao.IC_paymentDAO.findById"></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+		<association property="state" column="stateid" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>
+	</resultMap>
+	
+	<!-- 符合条件的条数 -->
+	<select id="saleCount" parameterType="cn.sz.zl.query.DWXQuery" resultType="Integer" >
+		select count(saleid) from sale 
+			<where>
+					<if test="qc_id!=null and qc_id!=''">
+						and c_id=#{qc_id}
+					</if>
+					<if test="qStartAddDate !=null  ">
+					and create_date >=  #{qStartAddDate}
+					</if>
+					<if test="qEndAddDate !=null">
+					and create_date  <![CDATA[<=]]> #{qEndAddDate}
+					</if>
+			</where>
+	</select>
+	
+</mapper>
+	
+
+
+
+
+
+
+

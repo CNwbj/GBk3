@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IReturnGoodsDAO" >
+	<resultMap type="cn.sz.zl.util.FHUtil" id="findall">
+		<association property="returngoods" column="orderid" select="cn.sz.zl.dao.IReturnGoodsDAO.findallById"></association>
+		<association property="customer" column="c_id" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById" ></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById" ></association>
+		<association property="state" column="stateid" select="cn.sz.zl.dao.IStateDAO.findStateById" ></association>
+	</resultMap> 
+	
+	<select id="queryAll"  resultMap="findall" >
+		select rg.*,c.*,m.*,s.* from returngoods rg,customer c,material m,state s
+		where rg.c_id = c.c_id and rg.material_id = m.material_id and rg.stateid = s.stateid 
+			<if test='orderid!=null and orderid!="" '>
+				and orderid = #{orderid}
+			</if>
+			<if test='c_id!=null and c_id!="" '>
+				and rg.c_id = #{c_id}
+			</if>
+			<if test='material_id!=null and material_id!="" '>
+				and rg.material_id = #{material_id}
+			</if>
+			<if test='c_name!=null and c_name!="" '>
+				and c_name like '%${c_name}%'
+			</if>
+			<if test="qStartAddDate!=null">
+				and orderdate>=#{qStartAddDate}
+			</if>
+			<if test="qEndAddDate!=null">
+				and orderdate<![CDATA[<=]]>#{qEndAddDate}
+			</if>
+	</select>
+	
+	<select id="findallById" parameterType="int" resultType="cn.sz.zl.pojo.ReturnGoods" >
+		select * from returngoods where orderid=#{orderid}
+	</select>
+	
+	<update id="updatestate" parameterType="int">
+		update returngoods set stateid = 1 where orderid = #{orderid}
+	</update>
+	
+	<select id="queryGoodsRows" parameterType="cn.sz.zl.query.FHQuery" resultType="int">
+		select count(orderid) from(
+		select rg.orderid,c.c_id,c.c_name,m.material_id,s.statename from returngoods rg,customer c,material m,state s
+		where rg.c_id = c.c_id and rg.material_id = m.material_id and rg.stateid = s.stateid )
+		<where>
+			<if test='orderid!=null and orderid!="" '>
+				and orderid = #{orderid}
+			</if>
+			<if test='c_id!=null and c_id!="" '>
+				and c_id = #{c_id}
+			</if>
+			<if test='c_name!=null and c_name!="" '>
+				and c_name like '%${c_name}%'
+			</if>
+			<if test='material_id!=null and material_id!="" '>
+				and material_id = #{material_id}
+			</if>
+			<if test="qStartAddDate!=null">
+				and orderdate>=#{qStartAddDate}
+			</if>
+			<if test="qEndAddDate!=null">
+				and orderdate<![CDATA[<=]]>#{qEndAddDate}
+			</if>
+		</where>
+	</select>
+	<!-- 生成订单，在returngoods表里插入数据 -->
+	<insert id="returnorder" parameterType="Map" >
+		insert into returngoods values(orderid_seq.nextval,#{c_id},#{m_id},0,#{goodscount},sysdate,'没有原因')
+	</insert>
+</mapper>

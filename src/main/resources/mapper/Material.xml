@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IMaterialDAO" >
+	<!-- 分页模糊查询 -->
+	<select id="findall" parameterType="cn.sz.zl.util.Excellent" resultMap="showinfo">
+	select * from (select m.*,d.depot_name,d.stateid,s.statename, rownum ro from material m ,depot d,state s where s.stateid=d.stateid and m.depot_id=d.depot_id and rownum &lt;=#{end} )l 
+  		<where>
+  			l.ro&gt;#{start}
+  			<if test="linchpin!=null and linchpin!=''"> and material_name like '%${linchpin}%'</if>
+			<if test="sprice!=null and tprice!=null and sprice!=null and tprice!=null and sprice!='' and tprice!=''">and material_price between #{sprice} and #{tprice}</if>
+  			
+  		</where> 	 
+	</select>
+		<resultMap type="cn.sz.zl.pojo.Material" id="showinfo">
+			<id column="material_id" property="material_id"/>
+			<result column="material_name" property="material_name"/>
+			<result column="material_price" property="material_price"/>
+			<result column="material_details" property="material_details"/>
+			<result column="material_sum" property="material_sum"/>
+			<result column="material_url" property="material_url"/>
+			<result column="material_nul" property="material_nul"/>
+			<result column="material_null" property="material_null"/>
+				<association property="state" javaType="cn.sz.zl.pojo.State">
+					<id column="stateid" property="stateid"/>
+					<result column="statename" property="statename"/>
+				</association>
+				<association property="depot" column="depot_id" select="cn.sz.zl.dao.IDepotDAO.findById">
+				</association>
+			
+		</resultMap>
+		<select id="getCount" parameterType="cn.sz.zl.util.Excellent" resultType="java.lang.Integer">
+			select count(material_id) from material
+			<where>
+				<if test="linchpin!=null and linchpin!=''"> and material_name like '%${linchpin}%'</if>
+				<if test="sprice!=null and tprice!=null and sprice!=null and tprice!=null and sprice!='' and tprice!=''">and material_price between #{sprice} and #{tprice}</if>
+			</where>
+		</select>
+		
+	
+	<!-- 根据Id级联 -->
+	<select id="findMaterialInfoById" resultType="cn.sz.zl.pojo.Material" parameterType="java.lang.Integer">
+		select * from Material  where  material_id=#{material_id}
+	</select>
+	<!-- 查询所有物料信息-->
+	<select id="findAllMaterial" resultType="cn.sz.zl.pojo.Material">
+		select * from Material 
+	</select>
+	
+</mapper>

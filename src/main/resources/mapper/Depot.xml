@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		<mapper namespace="cn.sz.zl.dao.IDepotDAO">
+			<select id="findById" parameterType="int" resultType="cn.sz.zl.pojo.Depot">
+				select * from depot where depot_id=#{depot_id}
+			</select>
+			<update id="updateDepot" parameterType="cn.sz.zl.pojo.Depot">
+				update depot set depot_sum=#{depot_sum} where depot_id=#{depot_id}
+			</update>
+		</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IFlowmeterDao" >
+	<select id="findAll" parameterType="cn.sz.zl.util.FlowQuery" resultMap="eveninfo">
+		select * from (select rownum r,f.fm_id,b.bill_id,s.saleid,t.flowmeter_type,m.material_id,p.purchase_id 
+      from flowmeter f,flowtype t,bill b,sale s,material m,purchase p 
+		<where>
+			f.bill_id=b.bill_id and b.sale_id = s.saleid and b.purchase_id = p.purchase_id and p.material_id =m.material_id 
+			 and f.flowmeter_type =t.flowmeter_type and rownum &lt;=#{begin}
+			
+			<if test="type!=null and type !=0">
+				and f.flowmeter_type=#{type}
+			</if>
+			<if test="first!=null">
+				and f.flowmeter_time &gt;=#{first}
+			</if>
+			<if test="last!=null">
+				and f.flowmeter_time &lt;=#{last}
+			</if>
+		</where>)temp
+		where temp.r&gt;#{end}
+		
+	</select>
+	<resultMap type="cn.sz.zl.util.EvenTable" id="eveninfo">
+		<association property="flowmeter" column="fm_id" select="cn.sz.zl.dao.IFlowmeterDao.findById"></association>
+		<association property="flowtype" column="flowmeter_type" select="cn.sz.zl.dao.IFlowtypeDao.findTypeById"></association>
+		<association property="bill" column="bill_id" select="cn.sz.zl.dao.IBillDao.findBillByBillId"></association>
+		<association property="purchase" column="purchase_id" select="cn.sz.zl.dao.IPurchaseDAO.findPurchaseById"></association>
+		<association property="sale" column="saleid" select="cn.sz.zl.dao.ISaleDao.querySale"></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+	</resultMap>
+	<select id="findById" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Flowmeter">
+		select * from flowmeter where fm_id=#{fmId}
+	</select>
+	
+	<select id="findByBillId" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Flowmeter">
+		select * from flowmeter where bill_id=#{bill_id}
+	</select>
+	
+	<select id="findFlowmeterById" parameterType="java.lang.Integer" resultMap="eveninfo">
+		select f.fm_id,b.bill_id,s.saleid,t.flowmeter_type,m.material_id,p.purchase_id 
+      from flowmeter f,flowtype t,bill b,sale s,material m,purchase p where f.bill_id=b.bill_id 
+      and b.sale_id = s.saleid and b.purchase_id = p.purchase_id and p.material_id =m.material_id 
+      and f.flowmeter_type =t.flowmeter_type  and fm_id=#{id}
+	</select>
+	
+	<select id="getCount" parameterType="cn.sz.zl.util.FlowQuery" resultType="java.lang.Integer">
+		select count(fm_id) from (select f.fm_id,b.bill_id,s.saleid,t.flowmeter_type,m.material_id,p.purchase_id 
+      from flowmeter f,flowtype t,bill b,sale s,material m,purchase p 
+		<where>
+			f.bill_id=b.bill_id and b.sale_id = s.saleid and b.purchase_id = p.purchase_id and p.material_id =m.material_id 
+			 and f.flowmeter_type =t.flowmeter_type 
+			
+			<if test="type!=null and type !=0">
+				and f.flowmeter_type=#{type}
+			</if>
+			<if test="first!=null">
+				and f.flowmeter_time &gt;=#{first}
+			</if>
+			<if test="last!=null">
+				and f.flowmeter_time &lt;=#{last}
+			</if>
+		</where>)
+	</select>
+	
+	<update id="updateColumn4" parameterType="java.util.Map">
+		update sale set column1 = #{stateid} where saleid = #{saleid}
+	</update>
+	
+	<select id="findBySaleid" parameterType="int" resultMap="findall">
+		select f.fm_id,b.bill_id,s.saleid,t.flowmeter_type,m.material_id,p.purchase_id 
+      from flowmeter f,flowtype t,bill b,sale s,material m,purchase p where f.bill_id=b.bill_id 
+      and b.sale_id = s.saleid and b.purchase_id = p.purchase_id and p.material_id =m.material_id 
+      and f.flowmeter_type =t.flowmeter_type and saleid=#{saleid} 
+	</select>
+	
+	<select id="findAllInfo" parameterType="java.util.Map" resultMap="findall" >
+		select * from (select rownum r,s.saleid,s.column1,s.column2,s.column3,c.c_id,m.material_id,cp.c_paymentid,st.stateid 
+		from sale s,customer c,material m,c_payment cp,state st
+		where s.c_id = c.c_id and s.material_id = m.material_id and s.c_paymentid = cp.c_paymentid and s.stateid = st.stateid 
+		and s.column1=7 and s.column2=7 and s.column3=7 and s.column4=6 and rownum &lt;=#{start}) y where y.r &gt;#{stop}
+	</select>
+	
+	<select id="getSaleCount" resultType="java.lang.Integer" >
+		select count(saleid) from (select rownum r,s.saleid,s.column1,s.column2,s.column3,c.c_id,m.material_id,cp.c_paymentid,st.stateid 
+		from sale s,customer c,material m,c_payment cp,state st
+		where s.c_id = c.c_id and s.material_id = m.material_id and s.c_paymentid = cp.c_paymentid and s.stateid = st.stateid 
+		and s.column1=6 and s.column2=7 and s.column3=7 and s.column4=7) 
+	</select>
+	
+	<resultMap type="cn.sz.zl.util.FHUtil" id="findall">
+		<association property="sale" column="saleid" select="cn.sz.zl.dao.ISaleDao.querySale" ></association>
+		<association property="customer" column="c_id" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById" ></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById" ></association>
+		<association property="payment" column="c_paymentid" select="cn.sz.zl.dao.IPaymentDAO.findPaymentById" ></association>
+		<association property="state" column="stateid" select="cn.sz.zl.dao.IStateDAO.findStateById" ></association>
+	</resultMap> 
+	
+	<update id="updateByBillID" parameterType="cn.sz.zl.pojo.Flowmeter" >
+		update flowmeter set now_balance=#{now_balance} where fm_id=#{fmid} 
+		<set>
+			<if test="flowmeter_id!=null and flowmeter_id!=0">flowmeter_id=#{flowmeter_id},</if>
+			<if test="old_balance!=null and old_balance!=0">old_balance=#{old_balance}</if>
+			<if test="bill_id!=null and bill_id!=0">bill_id=#{bill_id}</if>
+			<if test="flowmeter_time!=null">flowmeter_time=#{flowmeter_time}</if>
+			<if test="flowmeter_type!=null and flowmeter_type!=0">flowmeter_type=#{flowmeter_type}</if>
+			<if test="now_balance!=null and now_balance!=0">now_balance=#{now_balance}</if>
+		</set>
+	</update>
+	<update id="updateByAcc" parameterType="cn.sz.zl.pojo.ThirdAccount" >
+		update thirdaccount  
+		<set>
+			<if test="t_id!=null and t_id!=0">t_id=#{t_id},</if>
+			<if test="money!=null and money!=0">money=#{money}</if>
+		</set>
+		where t_id=#{t_id} 
+	</update>
+	<select id="findByAcc" parameterType="int" resultType="int">
+		select money from thirdaccount where t_id=#{t_id}
+	</select>
+	<insert id="insertFlowmeter" parameterType="cn.sz.zl.pojo.Flowmeter">
+		insert into flowmeter(fm_id,flowmeter_id,old_balance,bill_id,flowmeter_time,flowmeter_type,now_balance) 
+		 values(flowmeter_seq.nextval,#{flowmeter_id},#{old_balance},#{bill_id},#{flowmeter_time},#{flowmeter_type},#{now_balance})
+	</insert>
+	
+	<select id="findPurchaseById" parameterType="java.lang.Integer" resultMap="showinfoPurchase">
+		select * from purchase where sale_id =#{saleId}
+	</select>
+	
+	<resultMap type="cn.sz.zl.pojo.Purchase" id="showinfoPurchase">
+		<association property="sale" column="saleid" select="cn.sz.zl.dao.ISaleDao.querySale"></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+	</resultMap>
+	
+	<select id="findSaleid" resultType="java.lang.Integer">
+		select saleid from sale where column6=25
+	</select>
+</mapper>

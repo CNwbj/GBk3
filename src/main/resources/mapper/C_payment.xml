@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="cn.sz.zl.dao.IC_paymentDAO" >
+	
+	<!-- 查询所有支付方式信息-->
+	<select id="findAll" resultType="cn.sz.zl.pojo.C_payment">
+		select * from c_payment
+	</select>
+	<!-- 根据ID查询，级联 -->
+	<select id="findById" parameterType="Integer" resultType="cn.sz.zl.pojo.C_payment">
+		select * from c_payment where c_paymentid=#{c_paymentid}
+	</select>
+	
+</mapper>
+	
+
+
+
+
+
+
+

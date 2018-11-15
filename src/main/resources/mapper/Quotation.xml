@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IQuotationDAO">
+
+	<select id="findQuotationById" parameterType="java.lang.Integer" resultMap="findallQuoations">
+ 		select * from quotation where quotationid = #{quotationid}
+ 	</select>
+
+	<resultMap type="cn.sz.zl.pojo.Quotation" id="findallQuoations">
+		
+ 		<!-- 级联查询状态 -->
+ 		<association property="state0" column="stateid12" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		
+ 		<association property="state1" column="stateid13" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		
+ 		<association property="state2" column="stateid7" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		 		 
+ 		<association property="state3" column="stateid22" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>	
+ 		<association property="state4" column="stateid23" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		
+ 		<association property="state5" column="stateid14" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		
+ 		<association property="state6" column="stateid15" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		 		 
+ 		<association property="state7" column="stateid6" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		
+ 		
+ 		<association property="sysrole2" column="roleid2" javaType="cn.sz.zl.pojo.SysRole" select="cn.sz.zl.dao.IQuotationDAO.findRoleById"></association>		
+		<association property="sysrole7" column="roleid7" javaType="cn.sz.zl.pojo.SysRole" select="cn.sz.zl.dao.IQuotationDAO.findRoleById"></association>		 
+		<association property="sysrole8" column="roleid8" javaType="cn.sz.zl.pojo.SysRole" select="cn.sz.zl.dao.IQuotationDAO.findRoleById"></association>				
+		<!-- 级联查询物品名称 -->
+		<association property="material" column="material_id" javaType="cn.sz.zl.pojo.Material" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+		<!-- 级联查询付款方式 -->
+ 		<association property="cpayment" column="c_paymentid" javaType="cn.sz.zl.pojo.C_payment" select="cn.sz.zl.dao.IPaymentDAO.findPaymentById"></association>		
+		<!-- 级联查询客户信息 -->
+		<association property="customer" column="c_id" javaType="cn.sz.zl.pojo.Customer" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById"></association>		
+	</resultMap>
+	
+	<select id="findRoleById" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.SysRole">
+		select *from sysrole where roleid=#{roleid}
+	</select>
+	<!-- 多条件分页查询 -->	
+		<select id="queryQuotationByFy" parameterType="cn.sz.zl.util.MFenYe" resultMap="findallQuoations">
+		select * from (select t.*,rownum r from (select * from quotation 
+			<where>
+				<if test="query!=null">
+					<if test="query.qcid!=null and query.qcid!=''">
+						and c_id like '%${query.qcid}%'
+					</if>
+				
+					<if test="query.qcpaymentid!=null and query.qcpaymentid!=''">
+						and c_paymentid =#{query.qcpaymentid}
+					</if>
+					<if test="query.qmaterialid!=null and query.qmaterialid!=''">
+						and material_id =#{query.qmaterialid}
+					</if>
+	
+				</if>
+			</where>
+		)t) where r>#{startRow} and r<![CDATA[<]]>=#{endRow}
+	</select>
+	<!-- 查询符合要求的记录总数 -->
+	<select id="queryRowsByQuery" parameterType="cn.sz.zl.util.Query" resultType="java.lang.Integer">
+		select count(*) from quotation
+			<where>
+					<if test="qcid!=null and qcid!=''">
+						and c_id like '%${qcid}%'
+					</if>
+				
+					<if test="qcpaymentid!=null and qcpaymentid!=''">
+						and c_paymentid =#{qcpaymentid}
+					</if>
+					<if test="qmaterialid!=null and qmaterialid!=''">
+						and material_id =#{qmaterialid}
+					</if>
+		
+			</where>
+	</select>
+	
+	<!-- 添加报价单-->
+	
+	<insert id="insertQuotation" parameterType="cn.sz.zl.pojo.Quotation">
+		insert into Quotation (material_id,c_paymentid,quotation_date,ofr_vail,c_id,remarks,quotationid,q_price,stateid14,paycount)
+		values(#{material_id},#{c_paymentid},#{quotation_date},#{ofr_vail},#{c_id},#{remarks},saleid_seq.nextval,#{q_price},#{paycount},)
+		<!-- 	insert into Quotation 
+ 		<trim prefix="(" suffix=")" suffixOverrides="," >
+ 			<if test="quotationid != null" > quotationid, </if>
+			<if test="material_id != null" > material_id, </if>
+			<if test="c_paymentid != null" > c_paymentid, </if>
+			<if test="quotation_date != null" > quotation_date, </if>
+			<if test="ofr_vail != null" > ofr_vail, </if>
+			<if test="c_id != null" > c_id, </if>
+			<if test="q_price != null" > q_price, </if>
+			<if test=" paycount!= paycount" > paycount, </if>
+			<if test="stateid12 != null" > stateid12, </if>	
+			<if test="remarks != null" > remarks, </if>		
+ 		</trim>
+ 		
+ 		<trim prefix="values (" suffix=")" suffixOverrides="," >
+ 			<if test="quotationid != null" > #{quotationid}, </if>
+			<if test="material_id != null" > #{material_id}, </if>
+			<if test="c_paymentid != null" > #{c_paymentid}, </if>
+			<if test="quotation_date != null" > #{quotation_date}, </if>
+			<if test="ofr_vail != null" > #{ofr_vail}, </if>
+			<if test="c_id != null" > #{c_id}, </if>
+			<if test="q_price != null" > #{q_price}, </if>
+			<if test=" paycount!= paycount" > #{paycount}, </if>
+			<if test="stateid12 != null" > #{stateid12}, </if>		
+			<if test="remarks != null" > #{remarks}, </if>			
+ 		</trim> -->
+	</insert>
+	<!-- 根据状态编号修改当前提交状态 -->
+	<update id="updateTJStateById" parameterType="java.lang.Integer">
+		update quotation set stateid6 =7 where quotationid = #{quotationid}
+	</update>
+	<!-- 根据状态编号修改当前审核状态 -->
+	<update id="updateSHStateById" parameterType="java.lang.Integer">
+		update quotation set stateid22 =22 where quotationid = #{quotationid}
+	</update>
+	<!-- 根据状态编号修改当前是否完结的状态 -->
+	<!-- 修改 -->
+	<update id="UpdateQuotation" parameterType="cn.sz.zl.pojo.Quotation">
+		update Quotation 
+			<set>
+				
+				<if test="material_id != null" > material_id=#{material_id}, </if>
+				<if test="c_paymentid != null" > c_paymentid=#{c_paymentid}, </if>				
+				<if test="quotation_date != null" > quotation_date=#{quotation_date}, </if>				
+				<if test="ofr_vail != null" > ofr_vail=#{ofr_vail}, </if>				
+				<if test="c_id != null" > c_id=#{c_id}, </if>
+				<if test="stateid6 != null" > stateid6=#{stateid6}, </if>				
+				<if test="remarks != null" > remarks=#{remarks}, </if>
+				<if test="q_price != null" > q_price=#{q_price}, </if>	
+				<if test="stateid7 != null" > stateid7=#{stateid7}, </if>
+								
+				<if test="stateid23 != null" > stateid23=#{stateid23}, </if>				
+				<if test="stateid14 != null" > stateid14=#{stateid14}, </if>				
+				
+				<if test="roleid2 != null" > roleid2=#{roleid2}, </if>				
+				<if test="roleid7 != null" > roleid7=#{roleid7}, </if>	
+				<if test="roleid8 != null" > roleid8=#{roleid8}, </if>				
+					
+			</set>	
+		where quotationid=#{quotationid}
+	</update>
+	<!-- 删除 -->
+	<delete id="deleteQuotation" parameterType="int[]">
+		delete from Quotation where quotationid=#{quotationid} 
+	</delete>
+</mapper>
+
+
+
+
+
+
+

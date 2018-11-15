@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.ITalkPriceDAO" >
+	<!-- 根据Id级联 -->
+<!-- 
+	
+
+	
+	查询需要的交谈议价信息
+	<select id="findAllByTalkId" parameterType="java.lang.Integer" resultMap="findAll">
+		select t.c_id,t.stateid,t.tcontext from TalkPrice t,customer c,customService cs,state s 
+		where t.c_id=c.c_id and t.stateid=s.stateid and t.customserviceid=cs.customserviceid
+			   and t.stateid=#{stateid} order by talktime desc
+	</select>
+	<select id="findAllTalkPrice" resultMap="findAll">
+		select t.c_id,t.stateid,t.tcontext from TalkPrice t,customer c,customService cs,state s 
+		where t.c_id=c.c_id and t.stateid=s.stateid and t.customserviceid=cs.customserviceid
+	</select>
+	<resultMap type="cn.sz.zl.pojo.TalkPrice" id="findAll">
+		<id column="talkid" property="talkid"/>
+
+		级联查询物品名称
+		<association property="customservice" column="customserviceid" javaType="cn.sz.zl.pojo.CustomService" select="cn.sz.zl.dao.ICustomServiceDAO.findCustomServiceById"></association>
+		级联查询付款方式
+ 		<association property="state" column="stateid" javaType="cn.sz.zl.pojo.State" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>		
+		级联查询客户信息
+		<association property="customer" column="c_id" javaType="cn.sz.zl.pojo.Customer" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById"></association>		
+	</resultMap>
+	添加数据
+	<insert id="insertTalkPrice" parameterType="cn.sz.zl.pojo.TalkPrice">
+			insert into talkprice(talkid,c_id,material_id,q_price,stateid,talkdate) values(our_sequence.nextval,#{c_id},#{material_id},#{q_price},#{stateid},sysdate)
+ 	</insert> 
+ 	
+ 	-->
+</mapper>
+

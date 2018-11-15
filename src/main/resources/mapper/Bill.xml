@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IBillDao">
+	<select id="findBillBySaleId" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Bill">
+		select bill_id as billId,sale_id as saleId,purchase_id as purchaseId,profit from bill
+		 where sale_id=#{saleId}
+	</select>
+	
+	<select id="findBillByBillId" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Bill">
+		select bill_id as billId,sale_id as saleId,purchase_id as purchaseId,profit from bill
+		 where bill_id=#{billId}
+	</select>
+	
+	<insert id="addBill" parameterType="cn.sz.zl.pojo.Bill">
+		insert into bill(bill_id,sale_id,purchase_id,profit) values(bill_seq.nextval,#{saleId},#{purchaseId},#{profit})
+	</insert>
+</mapper>

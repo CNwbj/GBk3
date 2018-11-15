@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IPermissionDao">
+	
+	<select id="queryAllPermission" parameterType="java.util.Map" resultType="cn.sz.zl.pojo.Permission">
+		select perid,pname,parentid,percode,icon,perurl from permission where is_dele = 1
+	</select>
+	
+	<select id="queryAllPermissionSplit" parameterType="java.util.Map" resultType="cn.sz.zl.pojo.Permission">
+	    select  rn,perid,pname,parentname,perurl  from(
+	      select  rownum rn,a.perid,a.pname,b.pname parentname,a.perurl,a.is_dele  from 
+	      permission a left join permission b on a.parentid=b.perid where a.is_dele = 1)
+		 where rn <![CDATA[<=]]>#{end} and rn > #{start}
+	</select>
+	
+	<select id="queryAllURL" resultType="java.lang.String">
+		select perurl from permission where perurl is not null and is_dele = 1
+	</select>
+	
+	<select id="queryPermissionByloginname" parameterType="java.lang.String" resultType="cn.sz.zl.pojo.Permission">
+		select p.perid,p.pname,p.parentid,p.percode,p.icon,p.perurl from permission p,sysuser su,usertorole utr,roletopermission rtp 
+		where utr.userid = su.userid and rtp.perid = p.perid and utr.roleid = rtp.roleid and rtp.is_dele=1 and p.is_dele = 1 and su.loginname = #{loginname}
+	</select>
+	
+	<select id="queryPermissionByRoleid" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.Permission">
+		select p.perid,p.pname,p.parentid,p.percode,p.icon,p.perurl from permission p,roletopermission rtp 
+		where rtp.perid = p.perid and p.is_dele = 1 and rtp.roleid = #{roleid} and rtp.is_dele=1
+	</select>
+	
+	<insert id="addPermission" parameterType="cn.sz.zl.pojo.Permission">
+		insert into permission values(permissionseq.nextval,#{pname},#{parentid},#{perurl},null,null,1)
+	</insert>
+	
+	<select id="checkPerReByName" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(perid) from permission where pname = #{pname}
+	</select>
+	
+	<update id="deletePermission" parameterType="java.lang.Integer">
+		update permission set is_dele = 0 where perid = #{perid}
+	</update>
+	
+	<select id="countAllPermission" resultType="java.lang.Integer">
+		select count(perid) from permission where is_dele = 1 and perid &lt;&gt;0
+	</select>
+	
+	<select id="queryPeridByPname" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select perid from permission where is_dele = 1 and pname=#{pname}
+	</select>
+	
+	
+</mapper>

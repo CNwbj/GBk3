@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.zl.dao.IShipmentDAO" >
+	<select id="findSMById" parameterType="java.lang.Integer" >
+		select shipment_id as shipmentid,material_id as materialid,sale_id as saleid,
+	  state_id,userid,purchase_id as purchase,shipment_nul as shipmentnul,shipment_null as shipmentnull
+	  from shipment
+	  </select>
+	<select id="findAllAndShipments" parameterType="cn.sz.zl.util.Excellent" resultMap="ShipmentsAll">
+		select * from (select rownum ro ,d.depot_id,d.depot_sum,m.material_url,m.material_id,c.c_id,s.stateid,sa.column5, sa.saleid ,c.c_name,c.c_address,m.material_name,m.material_price,sa.goodscount,sa.create_date,sa.submit_date from
+ 			sale sa, CUSTOMER c,material m,state s ,depot d 
+ 			where m.depot_id =d.depot_id and sa.c_id=c.c_id and sa.material_id=m.material_id and sa.stateid=s.stateid and sa.column1 =7 and rownum &lt;=#{end})l 
+ 			
+		 <where>
+		 	  l.ro&gt;#{start}
+			<if test="linchpin!=null and linchpin!=''">and material_name like '%${linchpin}%'</if>
+			<if test="state!=null and state!=0">and column5=#{state}</if>
+			<if test="startTime!=null and stopTime!=null">and need_date between #{startTime} and #{stopTime}</if> 
+		</where>
+	</select>
+	<resultMap type="cn.sz.zl.util.FHUtil" id="ShipmentsAll">
+		<association property="customer" column="c_id" select="cn.sz.zl.dao.ICustomerDAO.findCustomerById"></association>
+		<association property="sale" column="saleid" select="cn.sz.zl.dao.ISaleDao.querySale"></association>
+		<association property="sendGoodState" column="column5" select="cn.sz.zl.dao.IStateDAO.findStateById"></association>
+		<association property="material" column="material_id" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+	</resultMap>
+	<!-- 页数查询加模糊 -->
+		<select id="getCount" parameterType="cn.sz.zl.util.Excellent" resultType="java.lang.Integer">
+		select  count(saleid) from (select rownum ro ,m.material_url, sa.saleid ,c.c_name,c.c_address,m.material_name,m.material_price,sa.last_date,sa.goodscount,sa.need_date from
+ 				sale sa, CUSTOMER c,material m,state s where
+  				sa.c_id=c.c_id and sa.material_id=m.material_id and sa.stateid=s.stateid and sa.column1 =6)
+			<where>
+				<if test="linchpin!=null and linchpin!=''">and s.material_name like '%${linchpin}%'</if>
+				<if test="state!=null and state!=0">and s.column5=#{state}</if>
+				<if test="startTime!=null and stopTime!=null">and s.submit_date between #{startTime} and #{stopTime}</if> 
+			</where>
+		</select>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="java.lang.Integer" resultMap="querySaleObj">
+    select  * from (select  d.depot_id,d.depot_sum,sa.column5,m.material_url,m.material_id,c.c_id,s.stateid, sa.saleid ,c.c_name,c.c_address,m.material_name,m.material_price,sa.create_date,sa.goodscount,sa.submit_date  from
+ sale sa, CUSTOMER c,material m,state s, depot d where m.depot_id=d.depot_id
+  and sa.c_id=c.c_id and sa.material_id=m.material_id and sa.stateid=s.stateid and sa.column1=7 and sa.saleid=#{saleid})
+	</select>
+	<resultMap type="cn.sz.zl.pojo.Sale" id="querySaleObj">
+		<association property="material" column="material_id" javaType="cn.sz.zl.pojo.Material" select="cn.sz.zl.dao.IMaterialDAO.findMaterialInfoById"></association>
+	</resultMap>
+	
+	<select id="queryRoleID" parameterType="java.lang.Integer" resultType="cn.sz.zl.pojo.SysUser">
+		select * from sysuser where userid = #{userid}
+	</select>
+	
+	<update id="updatePurchase" parameterType="java.util.Map">
+		update Sale set column5=#{column5} where saleid=#{saleid}
+	</update>
+	<update id="updateSysDate" parameterType="java.util.Map">
+		update Sale set first_date = sysdate where saleid=#{saleid}
+	</update>
+	<insert id="insertShipment" parameterType="cn.sz.zl.pojo.Shipment">
+		insert into shipment(shipment_id,material_id,saleid,stateid,userid,purchase_id,shipment_nul,shipment_null,c_id) values
+		(shipment_id.nextval,#{material_id},#{saleid},#{stateid},#{userid},#{purchase_id},#{shipment_nul},sysdate,#{c_id})
+	</insert>	
+	
+	
+	
+</mapper>

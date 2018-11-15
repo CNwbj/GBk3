@@ -14,6 +14,14 @@ public class Customer implements Serializable {
 	private String c_phone;
 	private String c_mail;
 	private Date c_createdate;
+	private String c_account_num;//卡号
+	
+	public String getC_account_num() {
+		return c_account_num;
+	}
+	public void setC_account_num(String c_account_num) {
+		this.c_account_num = c_account_num;
+	}
 	public Integer getC_id() {
 		return c_id;
 	}
